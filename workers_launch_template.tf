@@ -621,6 +621,7 @@ resource "aws_launch_template" "workers_launch_template" {
     aws_security_group_rule.workers_ingress_cluster_https,
     aws_security_group_rule.workers_ingress_cluster_primary,
     aws_security_group_rule.cluster_primary_ingress_workers,
+    aws_iam_role_policy_attachment.workers_AmazonSSMManagedInstanceCore,
     aws_iam_role_policy_attachment.workers_AmazonEKSWorkerNodePolicy,
     aws_iam_role_policy_attachment.workers_AmazonEKS_CNI_Policy,
     aws_iam_role_policy_attachment.workers_AmazonEC2ContainerRegistryReadOnly,

@@ -367,6 +367,7 @@ resource "aws_launch_configuration" "workers" {
     aws_security_group_rule.workers_ingress_cluster_https,
     aws_security_group_rule.workers_ingress_cluster_primary,
     aws_security_group_rule.cluster_primary_ingress_workers,
+    aws_iam_role_policy_attachment.workers_AmazonSSMManagedInstanceCore,
     aws_iam_role_policy_attachment.workers_AmazonEKSWorkerNodePolicy,
     aws_iam_role_policy_attachment.workers_AmazonEKS_CNI_Policy,
     aws_iam_role_policy_attachment.workers_AmazonEC2ContainerRegistryReadOnly,
@@ -503,6 +504,22 @@ resource "aws_iam_instance_profile" "workers" {
     create_before_destroy = true
   }
 }
+
+// might be where we need AmazonSSMManagedInstanceCore
+// https://docs.aws.amazon.com/eks/latest/userguide/eks-ug.pdf
+// iam:
+// attachPolicyARNs:
+// - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+// - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+// - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+// 
+// ** //  ** //  ** //  ** //  ** //  ** //  ** //  ** //  ** //  ** //  ** //  ** //
+// this allows SSM to attach to worker nodes
+resource "aws_iam_role_policy_attachment" "workers_AmazonSSMManagedInstanceCore" {
+  policy_arn = "${local.policy_arn_prefix}/AmazonSSMManagedInstanceCore"
+  role       = aws_iam_role.workers[0].name
+}
+// && // && // && // && // && // && // && // && // && // && // && // && // && // && //
 
 resource "aws_iam_role_policy_attachment" "workers_AmazonEKSWorkerNodePolicy" {
   count = var.manage_worker_iam_resources && var.create_eks ? 1 : 0

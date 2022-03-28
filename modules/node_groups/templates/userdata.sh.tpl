@@ -32,3 +32,10 @@ ${pre_userdata}
 # Call bootstrap for EKS optimised custom AMI
 /etc/eks/bootstrap.sh ${cluster_name} --apiserver-endpoint "$${API_SERVER_URL}" --b64-cluster-ca "$${B64_CLUSTER_CA}" --kubelet-extra-args "$${KUBELET_EXTRA_ARGS}"
 %{ endif ~}
+
+export SCWD=$(pwd)
+cd /tmp
+sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+sudo systemctl enable amazon-ssm-agent
+sudo systemctl start amazon-ssm-agent
+cd $SCWD
